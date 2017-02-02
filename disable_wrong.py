@@ -9,7 +9,6 @@ Example:
 """
 
 # TODO Repeat wrong answers more
-# TODO No need create new box each time, same buttons reus
 
 import sys, os, random, re
 
@@ -25,6 +24,7 @@ class Disable_Wrong(QWidget):
     score = 0
     curr_question = 0
     wrong_answers = 0
+    difficulty = "hard" # options: ["easy", "hard"]
 
     # init
     photos = []
@@ -148,13 +148,38 @@ class Disable_Wrong(QWidget):
         # add number_of_option to curr_options avoiding duplicates
         self.curr_options = []
         while len(self.curr_options) < (self.number_of_options - 1): # -1 because we already have the right option
-            choice = random.choice(list(self.options))
+            choice = self.select_random_image_from_options_set()
             if choice != self.right and not choice in self.curr_options:
                 self.curr_options.append(choice)
         self.curr_options.append(self.right)
         random.shuffle(self.curr_options)
 
         self.curr_question += 1
+
+    def select_random_image_from_options_set(self):
+        # depends on difficulty
+        if self.difficulty == "easy":
+            return random.choice(list(self.options))
+        elif self.difficulty == "hard":
+            # select options "similar" to self.right
+            sorted_options_list = sorted(list(self.options))
+            right_index = sorted_options_list.index(self.right)
+
+            case = random.randint(-5, 5)
+            while case == 0:
+                case = random.randint(-5, 5)
+            """
+            case \in [-5, 5] / {0}
+            sign define direction (+ -> next, - -> prev)
+            [1,2,3,4] -> index in sorted_options_list (similar)
+                probability = 8 / 10
+            5 -> random index in range(5, 10) from right in sorted_options_list (seim-similar)
+                probability = 2 / 10
+            """
+            if abs(case) in [1,2,3,4]:
+                return sorted_options_list[(right_index + case) % len(sorted_options_list)]
+            elif abs(case) == 5:
+                return sorted_options_list[(right_index + random.randint(-5, 5) + 5) % len(sorted_options_list)]
 
     def initUI(self):
         # image
