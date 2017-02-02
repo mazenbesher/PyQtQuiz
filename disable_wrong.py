@@ -29,10 +29,11 @@ class Disable_Wrong(QWidget):
     # init
     photos = []
     cwd = None
+    curr_options = []
 
     # images
     right_path = None
-    options = None
+    options = set([])
     right = None
 
     # UI
@@ -65,10 +66,19 @@ class Disable_Wrong(QWidget):
         print("Loaded {} Photos".format(len(self.photos)))
         print("Not loaded:", not_loaded)
 
+        # generate options
+        for image_name in self.photos:
+            self.options.add(self.remove_extension(image_name))
+
+        print("Unique options:", len(self.options))
+
+        # check number of options (not enough options)
+        assert(len(self.options) >= self.number_of_options)
+
         # random order
         random.shuffle(self.photos)
 
-        # assert more than number_of_options images
+        # assert more than number_of_options images (number of images less than number_of_options images)
         assert (len(self.photos) >= self.number_of_options)
 
         # UI
@@ -118,8 +128,8 @@ class Disable_Wrong(QWidget):
 
         self.image_label.setPixmap(pixmap)
 
-        for opt, btn in zip(self.options, self.btns):
-            btn.setText(self.remove_extension(opt))
+        for opt, btn in zip(self.curr_options, self.btns):
+            btn.setText(opt)
 
         self.update_score()
 
@@ -135,8 +145,14 @@ class Disable_Wrong(QWidget):
         # right answer and image randomly
         self.right = self.remove_extension(self.photos[self.curr_question])
 
-        self.options = self.photos[self.curr_question:self.curr_question + self.number_of_options]
-        random.shuffle(self.options)
+        # add number_of_option to curr_options avoiding duplicates
+        self.curr_options = []
+        while len(self.curr_options) < (self.number_of_options - 1): # -1 because we already have the right option
+            choice = random.choice(list(self.options))
+            if choice != self.right and not choice in self.curr_options:
+                self.curr_options.append(choice)
+        self.curr_options.append(self.right)
+        random.shuffle(self.curr_options)
 
         self.curr_question += 1
 
