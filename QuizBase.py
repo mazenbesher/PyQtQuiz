@@ -1,36 +1,22 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-""" CONVENTION 1
-number at the end of images names will be ignored
-Example:
-    Apple.jpg   -> Apple
-    Apple 2.png -> Apple
-"""
-
-# TODO Repeat wrong answers more
-# TODO Shortcuts for answers
-# TODO rounds and save high scores
-# TODO report wrong answers after round
-
 import sys, os, random, re
 
 from qtpy.QtWidgets import *
 from qtpy.QtGui import *
 from qtpy.QtCore import *
 
-class Disable_Wrong(QWidget):
+class QuizBase(QWidget):
     # quiz options
     image_extensions = ('.jpg', '.png', '.gif', '.JPG', '.PNG', '.GIF')
     number_of_options = 4
     image_size = 600
     window_size = image_size + 100
-    difficulty = "hard" # options: ["easy", "hard"]
+    difficulty = "hard"  # options: ["easy", "hard"]
 
     # globals
     score = 0
-    curr_question = 0
-    wrong_answers = 0
 
     # init
     photos = []
@@ -39,10 +25,11 @@ class Disable_Wrong(QWidget):
 
     # images
     right_path = None
-    options = set([])
     right = None
+    options = set([])
 
     # UI
+    options_box = None
     image_label = None
     grid = None
     score_label = None
@@ -109,34 +96,7 @@ class Disable_Wrong(QWidget):
         s = s[:s.find('.')]
         # remove number
         s = re.split(r"\s+\d+$", s)[0]
-
         return s
-
-    def update_score(self):
-        new = 'Score {} / {}'.format(self.score, len(self.photos))
-        self.score_label.setText(new)
-
-    def button_clicked(self):
-        clicked_btn = self.sender()
-        selected_option = clicked_btn.text()
-        if selected_option == self.right:
-            # update score if not only one option
-            if self.wrong_answers < self.number_of_options - 1:
-                self.score += 1
-
-            # enable all btns
-            for btn in self.btns:
-                btn.setEnabled(True)
-
-            # reset
-            self.wrong_answers = 0
-
-            self.updateUI()
-        else:
-            self.score -= 1
-            self.wrong_answers += 1
-            clicked_btn.setEnabled(False)
-            self.update_score() # no need to update the full UI just the score
 
     def updateUI(self):
         self.new_random_image()
@@ -148,8 +108,6 @@ class Disable_Wrong(QWidget):
 
         for opt, btn in zip(self.curr_options, self.btns):
             btn.setText(opt)
-
-        self.update_score()
 
     def new_random_image(self):
         # assure not extending the number of images
@@ -207,34 +165,24 @@ class Disable_Wrong(QWidget):
         self.image_label = QLabel(self)
         self.image_label.setAlignment(Qt.AlignCenter)
 
-        # score
-        self.score_label = QLabel(str(self.score), self)
-
         # options buttons
-        options_box = QGroupBox(self)  # layout to display btns
+        self.options_box = QGroupBox(self)  # layout to display btns
         options_layout = QHBoxLayout(self)
         for i in range(self.number_of_options):
             btn = QPushButton(self)
             btn.clicked.connect(self.button_clicked)
             self.btns.append(btn)
             options_layout.addWidget(btn)  # widget, row, col
-        options_box.setLayout(options_layout)
+        self.options_box.setLayout(options_layout)
 
         # layout
         self.grid = QVBoxLayout(self)
         self.grid.setSpacing(10)
 
-        self.grid.addWidget(self.score_label)
-        self.grid.addWidget(options_box)
-        self.grid.addWidget(self.image_label)
+        # add widgets to grid in child class
 
         self.setLayout(self.grid)
-        self.layout().setSizeConstraint(QLayout.SetFixedSize) # fixed layout size
+        self.layout().setSizeConstraint(QLayout.SetFixedSize)  # fixed layout size
         self.resize(self.window_size, self.window_size)
         self.setWindowTitle('Photo Quiz')
         self.show()
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = Disable_Wrong(sys.argv)
-    sys.exit(app.exec_())
