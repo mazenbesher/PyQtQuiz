@@ -9,6 +9,8 @@ Example:
 """
 
 # TODO Repeat wrong answers more
+# TODO rounds and save high scores
+# TODO image container with centering
 
 import sys, os, random, re
 
@@ -17,14 +19,17 @@ from qtpy.QtGui import *
 from qtpy.QtCore import *
 
 class Disable_Wrong(QWidget):
+    # quiz options
     image_extensions = ('.jpg', '.png', '.gif', '.JPG', '.PNG', '.GIF')
     number_of_options = 4
     image_size = 400
     window_size = image_size + 100
+    difficulty = "hard" # options: ["easy", "hard"]
+
+    # globals
     score = 0
     curr_question = 0
     wrong_answers = 0
-    difficulty = "hard" # options: ["easy", "hard"]
 
     # init
     photos = []
@@ -44,6 +49,9 @@ class Disable_Wrong(QWidget):
 
     def __init__(self, argv):
         super().__init__()
+        # print options
+        self.print_quiz_options()
+
         # get images directory (argv or browse for directory)
         if len(argv) > 1: # not just the name of the program
             self.cwd = argv[1]
@@ -84,6 +92,15 @@ class Disable_Wrong(QWidget):
         # UI
         self.initUI()
         self.updateUI()
+
+    def print_quiz_options(self):
+        print("Quiz options a.k.a the magic numbers :P")
+        print("image_extensions:", self.image_extensions)
+        print("number_of_options:", self.number_of_options)
+        print("image_size:",self.image_size)
+        print("window_size:",self.window_size)
+        print("difficulty:", self.difficulty)
+        print('-' * 40)
 
     def remove_extension(self, s):
         # see CONVENTION 1
@@ -172,9 +189,9 @@ class Disable_Wrong(QWidget):
             case \in [-5, 5] / {0}
             sign define direction (+ -> next, - -> prev)
             [1,2,3,4] -> index in sorted_options_list (similar)
-                probability = 8 / 10
+                probability = 8 / 10 = 4 / 5
             5 -> random index in range(5, 10) from right in sorted_options_list (seim-similar)
-                probability = 2 / 10
+                probability = 2 / 10 = 1 / 5
             """
             if abs(case) in [1,2,3,4]:
                 return sorted_options_list[(right_index + case) % len(sorted_options_list)]
