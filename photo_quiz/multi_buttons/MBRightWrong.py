@@ -7,7 +7,7 @@ from qtpy.QtWidgets import *
 from qtpy.QtGui import *
 from qtpy.QtCore import *
 
-from multi_buttons.MBQuizBase import MBQuizBase
+from photo_quiz.multi_buttons.MBQuizBase import MBQuizBase
 
 class RightWrong(MBQuizBase):
     # init

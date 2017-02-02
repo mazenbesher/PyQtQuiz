@@ -1,21 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-""" CONVENTION 1
-number at the end of images names will be ignored
-Example:
-    Apple.jpg   -> Apple
-    Apple 2.png -> Apple
-"""
-
 import sys, os, random, re
 
 from qtpy.QtWidgets import *
 from qtpy.QtGui import *
 from qtpy.QtCore import *
 
-from QuizBase import QuizBase
-
+from photo_quiz.QuizBase import QuizBase
 
 class MPDisableWrong(QuizBase):
     # quiz options

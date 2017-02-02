@@ -7,8 +7,7 @@ from qtpy.QtWidgets import *
 from qtpy.QtGui import *
 from qtpy.QtCore import *
 
-from QuizBase import QuizBase
-
+from photo_quiz.QuizBase import QuizBase
 
 class MBQuizBase(QuizBase):
     # quiz options
