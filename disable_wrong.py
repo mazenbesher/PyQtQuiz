@@ -9,8 +9,9 @@ Example:
 """
 
 # TODO Repeat wrong answers more
+# TODO Shortcuts for answers
 # TODO rounds and save high scores
-# TODO image container with centering
+# TODO report wrong answers after round
 
 import sys, os, random, re
 
@@ -22,7 +23,7 @@ class Disable_Wrong(QWidget):
     # quiz options
     image_extensions = ('.jpg', '.png', '.gif', '.JPG', '.PNG', '.GIF')
     number_of_options = 4
-    image_size = 400
+    image_size = 600
     window_size = image_size + 100
     difficulty = "hard" # options: ["easy", "hard"]
 
@@ -199,8 +200,12 @@ class Disable_Wrong(QWidget):
                 return sorted_options_list[(right_index + random.randint(-5, 5) + 5) % len(sorted_options_list)]
 
     def initUI(self):
+        # fixed window size
+        self.setFixedSize(self.window_size, self.window_size)
+
         # image
         self.image_label = QLabel(self)
+        self.image_label.setAlignment(Qt.AlignCenter)
 
         # score
         self.score_label = QLabel(str(self.score), self)
@@ -224,6 +229,7 @@ class Disable_Wrong(QWidget):
         self.grid.addWidget(self.image_label)
 
         self.setLayout(self.grid)
+        self.layout().setSizeConstraint(QLayout.SetFixedSize) # fixed layout size
         self.resize(self.window_size, self.window_size)
         self.setWindowTitle('Photo Quiz')
         self.show()
