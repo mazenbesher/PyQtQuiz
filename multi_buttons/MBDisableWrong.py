@@ -1,25 +1,16 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-""" CONVENTION 1
-number at the end of images names will be ignored
-Example:
-    Apple.jpg   -> Apple
-    Apple 2.png -> Apple
-"""
-
-import sys, os, random, re
+import sys
 
 from qtpy.QtWidgets import *
 from qtpy.QtGui import *
 from qtpy.QtCore import *
 
-from QuizBase import QuizBase
+from multi_buttons.MBQuizBase import MBQuizBase
 
-
-class DisableWrong(QuizBase):
+class MBDisableWrong(MBQuizBase):
     # globals
-    curr_question = 0
     wrong_answers = 0
 
     def update_score(self):
@@ -64,5 +55,5 @@ class DisableWrong(QuizBase):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = DisableWrong(sys.argv)
+    ex = MBDisableWrong(sys.argv)
     sys.exit(app.exec_())

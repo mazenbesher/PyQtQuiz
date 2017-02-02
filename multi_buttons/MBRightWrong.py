@@ -1,28 +1,15 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-""" CONVENTION 1
-number at the end of images names will be ignored
-Example:
-    Apple.jpg   -> Apple
-    Apple 2.png -> Apple
-"""
-
-# TODO Repeat wrong answers more
-
-import sys, os, random, re
+import sys
 
 from qtpy.QtWidgets import *
 from qtpy.QtGui import *
 from qtpy.QtCore import *
 
-from QuizBase import QuizBase
+from multi_buttons.MBQuizBase import MBQuizBase
 
-
-class RightWrong(QuizBase):
-    # globals
-    curr_question = 0
-
+class RightWrong(MBQuizBase):
     # init
     info = ''
 
