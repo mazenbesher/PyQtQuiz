@@ -1,7 +1,10 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import sys, os, random, re
+# TODO Errors of not enough images (otherwise infinite loop)
+# TODO Tool tip the score how it works
+
+import sys, os, random
 
 from qtpy.QtWidgets import *
 from qtpy.QtGui import *
@@ -11,7 +14,7 @@ from photo_quiz.QuizBase import QuizBase
 
 class MPDisableWrong(QuizBase):
     # quiz options
-    number_of_rows = 2
+    number_of_rows = 3
     number_of_cols = 4
     number_of_options = number_of_rows * number_of_cols
     image_size = 200
@@ -60,9 +63,7 @@ class MPDisableWrong(QuizBase):
 
         # images
         self.btns = []
-
-        mapper = QSignalMapper(self)
-
+        mapper = QSignalMapper(self) # map each btn with the current counter and send as parameter
         options_box = QGroupBox(self)  # layout to display images
         options_layout = QGridLayout(options_box)
         options_counter = 0
@@ -71,16 +72,16 @@ class MPDisableWrong(QuizBase):
                 if options_counter < self.number_of_options:
                     btn = QPushButton()
                     self.connect(btn, SIGNAL("clicked()"), mapper, SLOT("map()"))
-                    mapper.setMapping(btn, options_counter)
+                    mapper.setMapping(btn, options_counter) # call mapped(counter) on SIGNAL i.e. clicked
                     btn.setIconSize(QSize(self.image_size, self.image_size))
                     self.btns.append(btn)
                     options_layout.addWidget(btn, i, j, Qt.AlignCenter)
                     options_counter += 1
-        self.connect(mapper, SIGNAL("mapped(int)"), self.button_clicked)
+        self.connect(mapper, SIGNAL("mapped(int)"), self.button_clicked) # send counter as parameter
         options_box.setLayout(options_layout)
 
         grid = QVBoxLayout(self)
-        grid.setSpacing(10)
+        grid.setSpacing(10) # vertical spacing since "V"Box
 
         self.setLayout(grid)
         self.layout().setSizeConstraint(QLayout.SetFixedSize)  # fixed layout size
@@ -107,15 +108,21 @@ class MPDisableWrong(QuizBase):
             self.curr_question = 0
             random.shuffle(self.photos) # reshuffle
 
-        # set the other images
-        for i in range(self.number_of_options):
-            if i != self.right_index:
-                # avoid right image and image with same name
-                image = random.choice(self.photos)
-                while image == right_image or self.remove_extension(image) == self.remove_extension(right_image):
-                    image = random.choice(self.photos)
-                path = os.path.join(self.cwd, image)
-                self.btns[i].setIcon(QIcon(path))
+        # set the other images TODO more efficient algorithm
+        photos_no_right = self.photos
+        photos_no_right.pop(self.curr_question) # avoid right image
+        # avoid images with the same name as the right image (e.g. Apple 1, Apple 2, ...) see CONVENTION 1
+        photos_no_right = [p for p in photos_no_right if self.remove_extension(p) != self.remove_extension(right_image)]
+
+        options_images = random.sample(photos_no_right, self.number_of_options - 1)
+
+        options_images_indexes = list(range(len(self.btns)))
+        options_images_indexes.pop(self.right_index)
+
+        for i in options_images_indexes:
+            image = options_images.pop()
+            path = os.path.join(self.cwd, image)
+            self.btns[i].setIcon(QIcon(path))
 
         self.update_score()
 
