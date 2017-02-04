@@ -14,7 +14,7 @@ from photo_quiz.QuizBase import QuizBase
 
 class MPDisableWrong(QuizBase):
     # quiz options
-    number_of_rows = 3
+    number_of_rows = 2
     number_of_cols = 4
     number_of_options = number_of_rows * number_of_cols
     image_size = 200
@@ -109,7 +109,7 @@ class MPDisableWrong(QuizBase):
             random.shuffle(self.photos) # reshuffle
 
         # set the other images TODO more efficient algorithm
-        photos_no_right = self.photos
+        photos_no_right = self.photos[:]
         photos_no_right.pop(self.curr_question) # avoid right image
         # avoid images with the same name as the right image (e.g. Apple 1, Apple 2, ...) see CONVENTION 1
         photos_no_right = [p for p in photos_no_right if self.remove_extension(p) != self.remove_extension(right_image)]
